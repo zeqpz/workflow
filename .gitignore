@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.db
+*.log
+.env
+*.key
+research/discord/raw/
