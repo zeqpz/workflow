@@ -85,6 +85,8 @@ def find_claude() -> str:
     # The desktop app is an MSIX package: outside the app its AppData is virtualized here.
     cands += glob.glob(os.path.join(os.environ.get("LOCALAPPDATA", ""), "Packages", "Claude_*", "LocalCache",
                                     "Roaming", "Claude", "claude-code", "*", "*", "claude.exe"))
+    # newer app builds keep it under %LOCALAPPDATA%/Claude-Data/claude_<id>/claude-code/<ver>/<hash>/
+    cands += glob.glob(os.path.join(os.environ.get("LOCALAPPDATA", ""), "Claude-Data", "claude_*", "claude-code", "*", "*", "claude.exe"))
     cands += glob.glob(str(HOME / ".local" / "bin" / "claude*"))
 
     def ver(p):
