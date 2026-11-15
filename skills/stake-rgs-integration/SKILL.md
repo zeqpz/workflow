@@ -33,7 +33,7 @@ Sources: engine.io Discord (#rgs-docs-discussion, #frontend-sdk-discussion, 2025
 - Demo RGS rate limit now surfaces as a Cloudflare 429 WITHOUT CORS headers: the game only sees `TypeError: Failed to fetch`. Treat a failed fetch as "slow down / reconnect" UI; never auto-retry a `/play`.
 - Currencies: format money with `Intl.NumberFormat` and fall back to the RGS-provided display value for unknown codes (new XEC currency broke games). Huge VND/IDR wins exceed 2^53 - keep amounts as strings/BigInt end to end (end-round broke on demo).
 - `minimumRoundDuration` (unit undocumented): enforce it as a minimum gap between bets, incl. turbo/autoplay.
-- A mode with `maxBet: 0` (seen for every mode under XGC) is DISABLED - hide/disable it, don't treat 0 as unlimited.
+- `gameModes[].maxBet: 0` (sent for every mode under XGC) means NO per-mode cap - fall back to `config.maxBet`. Never hide a mode for it: a reviewer rejected a build whose bonus cards vanished under GC (2026-11-15).
 - No supported way to persist player picks for resume/replay - encode choices as separate modes.
 - Docs moved to https://studio.engine.io/docs/rgs ; replay requirements: https://stake-engine.com/docs/approval-guidelines/game-replay-requirements
 
