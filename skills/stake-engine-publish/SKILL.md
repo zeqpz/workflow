@@ -11,6 +11,9 @@ Engine has no API key: it trusts only the logged-in browser session. So everythi
 
 ## Before you start
 - The commit is pushed and the working tree is clean (`git rev-parse HEAD origin/main` equal, `git status --short` empty). The tab reads GitHub, not your disk.
+- The tab must be signed in. A browser pane that has never opened the studio lands on "Sign in to Engine": stop and ask the owner to sign in there. Never sign in, tick the terms boxes or run the OAuth flow yourself.
+- Don't guess the slug: `/teams/<team>/games` lists every game as a link `/teams/<team>/games/<slug>` (High Peaks is `high-peaks`, not the repo's name). A game repo's copy of the script may still carry a placeholder slug, and may live at `tools/engine/` instead of `tools/engine_upload/`.
+- Test pages (`*_test.html`) are not part of the game: check `CFG.skip` covers every one the repo has.
 - Open `https://studio.engine.io/teams/<team>/games/<slug>/files`, the plain page:
   - `?launch=true` answers "Forbidden" to uploads;
   - `/games/<slug>/files` without `/teams/<team>` renders "Something went wrong".
@@ -20,10 +23,12 @@ Engine has no API key: it trusts only the logged-in browser session. So everythi
    - Set `game`, `repo`, `commit` (full 40-char SHA) and `partsToDo: ["front"]` (or `["math"]`).
    - Set `dryRun: true` first.
 2. Run it. The page's CSP blocks `eval` but allows inline scripts, so append `<script>` with text `"window.__upRet = " + source`. Poll `__upStatus()` inside one JS call (loop up to ~40 s); a front batch of ~900 files checks in ~35 s.
-3. Check that the dry run's `changed` list is exactly the files your commits touched. More means the scratch area holds someone else's upload, or CRLF copies (`crlfSame` handles those).
+   - A JS call in the pane is cut off at ~45 s, but the job lives on `window`: an upload of 336 files took 120 s, polled by three calls in a row. Keep the patched source on `window` after the dry run and flip only `dryRun` for the real run.
+3. Check that the dry run's `changed` list is exactly the files your commits touched: its count should equal `git diff --name-only <last uploaded commit>..HEAD -- frontend | wc -l` minus the skipped files (336 = 336 on High Peaks), and the folders should match. More means the scratch area holds someone else's upload, or CRLF copies (`crlfSame` handles those).
 4. Run again with `dryRun: false`. It needs `phase: "done"`, `verified == uploaded`, `errors: []`. Every upload is checked against a fresh listing whose etag is the MD5 of the bytes sent.
 5. **Stale files**: diff the scratch listing (`GET /api/file/game/<team>/<slug>/scratch/front`) against the commit's tree (`api.github.com/repos/<repo>/git/trees/<sha>?recursive=1`, `frontend/` minus `mock_rgs.py`/`__pycache__`).
    - For anything extra, confirm it was deleted in git and nothing references it (`git grep`).
+   - Extras left by OLDER builds (not by your commits) are the owner's call: list them, say that nothing references them, and delete only on a yes. They do not block a publish.
    - Then `POST /api/file/delete {team, game, paths:[...]}`. Use a `paths` ARRAY: a singular `path` answers `{"deleted":0}` silently.
 6. **Publish**: `POST /api/file/publish/front {team, game}` -> `{"version":N,"changed":true}`.
    - `changed:false` means nothing new reached the bundle (e.g. a path minted without its `front/` prefix landed beside it).

@@ -27,7 +27,8 @@
       front: "frontend/",
       math: "math-sdk/games/YOUR_GAME/library/publish_files/",   // big books not on GitHub: upload math another way
     },
-    skip: [/(^|\/)__pycache__\//, /^frontend\/mock_rgs\.py$/],   // the local dev server is not part of the game
+    skip: [/(^|\/)__pycache__\//, /^frontend\/mock_rgs\.py$/,   // the local dev server is not part of the game
+           /^frontend\/[^/]*_test\.html$/],                      // nor are the test pages
     only: null,        // e.g. ["front/index.html"]: just these bundle paths (null: every file in the parts)
     partsToDo: null,   // e.g. ["front"]: just these bundles (null: all of CFG.parts)
     dryRun: false,     // true: report what differs, upload nothing

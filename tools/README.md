@@ -31,6 +31,20 @@ python tools\memprobe\loadtime.py --mbps 20 [--desktop] [--page index_before.htm
 - `wkprobe.py` plays a replay in real WebKit (Playwright's Windows build). Throwaway venv:
   `uv venv X && uv pip install --python X playwright psutil && set PLAYWRIGHT_BROWSERS_PATH=Y && X\Scripts\python -m playwright install webkit`.
 
+## qa_shots.py - photograph the game while it moves
+An agent's embedded browser pane often reports `document.hidden`: animations are frozen in its screenshots and the game
+fast-forwards its holds. This starts a headless Chrome of its own (`cdp.py`) and takes a burst of shots through the
+moment, so you see the middle of a drop, not its end.
+
+```
+set SLOT_MOCK=http://localhost:8755
+python tools\qa_shots.py OUT scene                 # the game at rest
+python tools\qa_shots.py OUT replay:base:369       # a real book, a shot every .6 s for 15 s
+python tools\qa_shots.py OUT js:fake_event.js 390x844   # run a snippet, then 7 shots over 2.6 s
+```
+
+It prints the page's uncaught errors. Look at the pictures too: a clean console has passed a visibly broken effect.
+
 ## engine_upload/github_upload_tab.js - Engine uploads from a pushed commit (Route A, the normal one)
 Runs inside the logged-in `studio.engine.io/teams/<team>/games/<slug>/files` tab: reads the commit from public GitHub,
 MD5-diffs every file against the scratch listing, uploads what differs and verifies it. Set `CFG.team/game/repo/commit`
