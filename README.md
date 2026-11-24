@@ -9,19 +9,22 @@ Know-how for building HTML5 slot games for Stake Engine (Engine / engine.io) tha
 
 | Folder | Contents |
 |---|---|
-| `skills/` | 8 Claude Code skills, each a `SKILL.md` (see the list below) |
+| `skills/` | 10 Claude Code skills, each a `SKILL.md` (see the list below) |
 | `agents/` | 7 specialist subagents that preload those skills and share the same safety rules |
 | `agenthub/` | Local MCP task hub, so any number of Claude Code sessions can queue work for the agents |
-| `research/` | The sourced research the skills are built from: the web report plus Discord digests (summaries only, no raw message dumps) |
+| `research/` | The sourced research the skills are built from: the web report, Discord digests (summaries only, no raw message dumps) and our own review rounds with numbers |
+| `tools/` | `memprobe/`: measure a game the way an iPhone sees it (WebKit memory model, frame times, throttled cold loads, real-WebKit rounds); `engine_upload/github_upload_tab.js`: upload a pushed commit from the logged-in dashboard tab; `stake_upload.py`: upload from disk. See [tools/README.md](tools/README.md) |
 
 **Skills**
-- `slot-frontend-performance`: Pixi v8 settings, batching, masks and filters, upload/GC hitches, DOM/CSS compositor traps, the measurement workflow
+- `slot-frontend-performance`: Pixi v8 settings, batching, masks and filters, upload/GC hitches, DOM/CSS compositor traps, phone lag, a fast loading screen, the measurement workflow
+- `slot-ios-webkit-memory`: why a game reloads or crashes on iPhone (every iOS browser is WebKit), the light MOBILE tier that fixes it, measuring without an iPhone
 - `slot-animation-pipeline`: Spine 4.2 (spine-pixi-v8), rigs, sprite sheets, GSAP, shader FX, budgets, the reviewer quality bar
 - `slot-frontend-stack`: TS + PixiJS v8 + Vite, web-sdk vs custom, the asset pipeline (AssetPack, KTX2/WebP, Howler, fonts), CDN/CSP constraints
 - `slot-tools-and-resources`: catalogue of official and community repos and tools, with links
-- `stake-rgs-integration`: wire format, bets and decimals, resume, Bet Replay, social mode, newer gotchas
+- `stake-rgs-integration`: wire format, bets and decimals, default bet on refresh, resume, the Bet Replay window, social mode (the full restricted-phrase table), newer gotchas
 - `stake-math-workflow`: math-sdk, optimisers, publish format, compliance (RTP 96.00-96.70%, buy caps, ETL)
 - `stake-approval-checklist`: pre-submission QA plus a "don't ship this" list of real reported bugs
+- `stake-engine-publish`: upload, verify and publish on studio.engine.io from the logged-in dashboard tab, delete stale files, check the launcher serves it, lobby tile and cover art
 - `agenthub`: how to hand tasks to the hub
 
 **Agents**
@@ -56,4 +59,4 @@ Summary of how it works and why it's safe:
 - Each task runs through `claude -p --agent <name>` in Claude Code's `auto` permission mode.
 
 ## Freshness
-The rules change often. The RTP band, star thresholds and bet limits shown were correct on 2026-11-08. Re-check https://studio.engine.io/docs and the approval guidelines before relying on them.
+The rules change often. The RTP band, star thresholds and bet limits shown were correct on 2026-11-08; the social-mode table and replay-window requirements on 2026-11-16. Re-check https://studio.engine.io/docs and the approval guidelines before relying on them.

@@ -1,11 +1,13 @@
 ---
 name: stake-approval-reviewer
-description: Pre-submission reviewer that audits a Stake Engine game build the way engine.io reviewers do - console, external requests, layouts, RGS behaviour, replay/resume, decimals, social strings, rules screen, art/animation quality and "generic AI" tells. Read-only by default; returns a prioritised pass/fail list. Use before upload/publish or to triage a rejection.
+description: Pre-submission reviewer that audits a Stake Engine game build the way engine.io reviewers do - console, external requests, layouts, RGS behaviour, replay window/resume, default bet on refresh, decimals, social strings (the full jurisdiction table), loading time, iPhone behaviour, rules screen, art/animation quality and "generic AI" tells. Read-only by default; returns a prioritised pass/fail list. Use before upload/publish or to triage a rejection.
 tools: Read, Grep, Glob, Bash, PowerShell
 skills:
   - stake-approval-checklist
   - stake-rgs-integration
   - slot-frontend-performance
+  - slot-ios-webkit-memory
+  - stake-engine-publish
 ---
 You are a strict Stake Engine game reviewer. Do not edit project files unless the brief explicitly allows fixes.
 

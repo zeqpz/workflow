@@ -13,6 +13,8 @@ Compiled from reviewer feedback in the engine.io Discord (2025-2026) and https:/
 - [ ] No external requests at all: fonts, scripts, analytics bundled (CSP `default-src 'self'`, cannot be extended).
 - [ ] Relative paths only (`base: "./"`; `<img>` in rules/paytable too).
 - [ ] Build size: aim 10-20 MB, worry above ~30-50 MB. No duplicate asset loads (check the network tab).
+- [ ] The loading screen waits only for the first screen (not every animation clip), its bar moves by bytes and never parks at 99%, and it cannot hang (a cap). Test a COLD load on a throttled 20 Mbps link: ~10 s is fine, 22 s with the bar stuck was flagged "bugged".
+- [ ] The intro/feature screen: "Click to play" sits under the feature boxes at every size (it was pinned to the bottom and covered the third box in Engine's launcher, ~800x880); the column shrinks to fit rather than overlapping or scrolling.
 
 ## Layout (reviewers test every one)
 - [ ] Desktop, mobile portrait, mobile landscape, Popout S, Popout L - no clipping, no forced rotation, safe areas (mobile Chrome bottom bar).
@@ -21,11 +23,15 @@ Compiled from reviewer feedback in the engine.io Discord (2025-2026) and https:/
 
 ## Round / RGS (see the stake-rgs-integration skill)
 - [ ] Bet ladder/min/max/default from RGS; mode maxBet respected; buy/ante cost valid.
+- [ ] Every launch and every refresh with no round open opens on `defaultBetLevel` (no remembered bet), even when the balance can't cover it (rejected 2026-11-16 and 2026-11-17).
+- [ ] Bonus buys work under GC: `gameModes[].maxBet: 0` is no cap, never a hidden or "lower the play" card (rejected 2026-11-15/16).
+- [ ] Autoplay can always be stopped, also when the balance can't cover all its rounds; it needs only the next round covered (rejected 2026-11-16).
 - [ ] Balance & bet 2 decimals; wins exact (3-4 dp), match payoutMultiplier x bet for ~10 wins per mode.
 - [ ] Win credited after animations; end-round only on active rounds.
 - [ ] Resume mid-round restores the event AND its bet.
-- [ ] Bet Replay: no session, betting UI disabled, Play + Play again, shows cost/payout/multiplier, deterministic visuals.
-- [ ] Social mode word swaps; RTP + max win per mode shown in rules.
+- [ ] Bet Replay: no session, betting UI disabled, deterministic visuals, and the replay window shows Mode, Base Bet, Cost Multiplier, Total Bet Cost, Payout Multiplier, Total Win, with Start Replay before and Replay Again after the round. It respects `lang`.
+- [ ] Social mode: the full jurisdiction table plus inflections, mode names free of buy/bet/pay and identical in game, replay and math, replay window clean, XGC/XSC without "$", English only. Scan every screen's text and attributes with an XGC wallet (see stake-rgs-integration).
+- [ ] RTP + max win per mode shown in rules.
 - [ ] Fast/turbo and autoplay (if present) behave; space-to-spin doesn't double-fire.
 
 ## Don't ship this (real bugs players/reviewers reported, Aug-Nov 2026)
@@ -43,6 +49,7 @@ Compiled from reviewer feedback in the engine.io Discord (2025-2026) and https:/
 - [ ] Symbols never visible outside the reel mask; text not clipped by borders; nothing pops in before the intro click; no 404s on the CDN build.
 - [ ] Long session (30+ min, 500 spins) has no memory leak or slowdown; iPhone spam-press doesn't freeze.
 - [ ] Safari: no VP9-alpha WebM (unsupported) - provide a fallback; no single oversized atlas (iOS crash).
+- [ ] iPhone 12 (the reviewers' phone, iOS 18.6.4): no reloads ("the page repeatedly reloads", "crashes during the bonus and again after reloading" = WebKit killed the tab for memory; rejected on three games 2026-11-16/17) and no lag. Ship a MOBILE tier (`slot-ios-webkit-memory` skill; the lag side in `slot-frontend-performance`): zoom-fit #app, no character or living background, one phone-made background, no idle wanders, tier-aware preloads. Check the WebKit memory model and frame times in iPhone emulation, and play a round in Playwright WebKit.
 
 ## Rules / info screen
 - [ ] Per-mode RTP and max win, paytable, feature explanations, jurisdiction disclaimer.
@@ -51,6 +58,7 @@ Compiled from reviewer feedback in the engine.io Discord (2025-2026) and https:/
 ## Art & animation quality (most common rejections)
 Dashboard rejection text quotes reviewers: players would place "1-2 bets before losing interest", "generic AI assets (standard fonts, gradients, emoji icons, border effects)", missing bonus features. "Poor animations" in practice means: every symbol needs its OWN land + win animation, the mascot must animate smoothly (low-fps idles get "Character animation is low framerate"), the background must not be fully static ("too static"), and bonuses must not all play the same. Resubmit needs a 3-day wait and is scored from scratch; a re-rate can be requested immediately.
 - [ ] Coherent art style; symbol hierarchy readable at a glance; enough gameplay depth (reviewers penalise thin features).
+- [ ] Lobby tile (3:4) and cover (16:9): "a single main character in the Key Focus Area on a bright background with no dark edges" - a tile with two characters was rejected 2026-11-16. See `stake-engine-publish` for the Media Editor.
 - [ ] Bet bar: clear, standard and usable - heavily custom-themed bet bars have been penalised; fps lag is penalised.
 - [ ] Polished symbol animations (land, idle, win), bonus transitions, win modals with motion, a good bet bar.
 - [ ] No "generic AI" tells: stock gradients, default fonts, emoji icons in the HUD, glow-border cliches. Use custom bitmap fonts and icons.

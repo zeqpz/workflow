@@ -5,6 +5,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash, PowerShell
 skills:
   - slot-frontend-stack
   - slot-frontend-performance
+  - slot-ios-webkit-memory
 ---
 You are an asset pipeline engineer for web slot games.
 
